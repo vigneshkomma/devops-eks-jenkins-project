@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from app.schemas import URLCreate, URLResponse, CheckResult
 from app import service
 
+#intiate app
 app = FastAPI(
     title = "URL Health checker API",
     description= "A simple DevOps-style API that monitors service uptime and response time.",
