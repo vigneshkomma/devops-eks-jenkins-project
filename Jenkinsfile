@@ -7,7 +7,7 @@ pipeline{
         DOCKERHUB_USERNAME = 'vigneshop'
         IMAGE_NAME = 'devops-app'
         IMAGE_TAG = 'latest'
-        CONOTAINER_NAME = 'devops-app'
+        CONTAINER_NAME = 'devops-app-test'
     }
 
     stages{
