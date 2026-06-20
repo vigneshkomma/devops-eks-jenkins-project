@@ -1,37 +1,33 @@
-pipeline{
-    agent{
+pipeline {
+    agent {
         label 'jenkins-worker'
     }
 
-    environment{
+    environment {
         DOCKERHUB_USERNAME = 'vigneshop'
         IMAGE_NAME = 'devops-app'
         IMAGE_TAG = "${BUILD_NUMBER}"
         CONTAINER_NAME = 'devops-app-test'
     }
 
-    stages{
-
+    stages {
         stage('Checkout') {
-            steps{
+            steps {
                 checkout scm
             }
         }
 
-        stage('Build docker image'){
-            steps{
+        stage('Build Docker Image') {
+            steps {
                 sh '''
                     docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
                     docker tag $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
-
-                    docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
-                    docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
                 '''
             }
         }
 
-        stage('Test container'){
-            steps{
+        stage('Test Container') {
+            steps {
                 sh '''
                     docker rm -f $CONTAINER_NAME || true
                     docker run -d --name $CONTAINER_NAME -p 8000:8000 $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
@@ -41,8 +37,8 @@ pipeline{
             }
         }
 
-        stage('Push to docker hub'){
-            steps{
+        stage('Push to Docker Hub') {
+            steps {
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'dockerhub-creds',
@@ -58,7 +54,6 @@ pipeline{
                 }
             }
         }
-
     }
 
     post {
@@ -69,15 +64,12 @@ pipeline{
             '''
         }
 
-        success{
-            echo "Docker image pushed successfully"
+        success {
+            echo "Docker image pushed successfully: $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG"
         }
 
-        failure{
+        failure {
             echo "Pipeline failed"
         }
     }
-
-
-
 }
