@@ -1,0 +1,80 @@
+pipeline{
+    agent{
+        label 'jenkins-worker'
+    }
+
+    environment{
+        DOCKERHUB_USERNAME = 'vigneshop'
+        IMAGE_NAME = 'devops-app'
+        IMAGE_TAG = 'latest'
+        CONOTAINER_NAME = 'devops-app'
+    }
+
+    stages{
+
+        stage('Checkout') {
+            steps{
+                checkout scm
+            }
+        }
+
+        stage('Build docker image'){
+            steps{
+                sh '''
+                    docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
+                    docker tag $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
+                '''
+            }
+        }
+
+        stage('Test container'){
+            steps{
+                sh '''
+                    docker rm -f $CONTAINER_NAME || true
+                    docker run -d --name $CONTAINER_NAME -p 8000:8000 $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+                    sleep 5
+                    curl -f http://localhost:8000/health
+                '''
+            }
+        }
+
+        stage('Push to docker hub'){
+            steps{
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+                        docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
+                    '''
+                }
+            }
+        }
+
+    }
+
+    post {
+        always {
+            sh '''
+                docker rm -f $CONTAINER_NAME || true
+                docker logout || true
+            '''
+        }
+
+        success{
+            echo "Docker image pushed successfully"
+        }
+
+        failure{
+            echo "Pipeline failed"
+        }
+    }
+
+
+
+}
