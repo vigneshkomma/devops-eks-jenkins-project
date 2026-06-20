@@ -83,6 +83,7 @@ devops-eks-jenkins-project/
 ├── Jenkinsfile.build
 ├── Jenkinsfile.deploy
 ├── logs
+├── screenshots
 └── README.md
 ```
 
@@ -90,7 +91,7 @@ devops-eks-jenkins-project/
 # Infrastructure
 
 ## AWS EC2 Instances
-![alt text](<Screenshot From 2026-06-20 12-35-50-1.png>)
+![alt text](screenshots/ec2.png)
 ### Jenkins Controller
 
 Responsibilities:
@@ -127,8 +128,6 @@ Installed Software
 
 ### Kubernetes Server
 
-Responsibilities
-
 - Host Kubernetes Cluster
 - Run application pods
 - Manage deployments
@@ -145,7 +144,7 @@ Installed Software
 # CI Pipeline
 
 The build pipeline is triggered automatically whenever code is pushed to GitHub.
-![alt text](<Screenshot From 2026-06-20 13-46-01.png>)
+![alt text](screenshots/devops-app.png)
 Pipeline stages:
 
 ```
@@ -166,7 +165,7 @@ Push Image to Docker Hub
 # CD Pipeline
 
 Triggered automatically after a successful build.
-![alt text](<Screenshot From 2026-06-20 13-46-24.png>)
+![alt text](screenshots/devops-deploy.png)
 Pipeline stages:
 
 ```
@@ -190,7 +189,7 @@ Application Available
 # Kubernetes Deployment
 
 Application is deployed using Helm.
-![alt text](<Screenshot From 2026-06-20 13-46-53.png>)
+![alt text](screenshots/terminal.png)
 Features:
 
 - Rolling Updates
@@ -206,7 +205,7 @@ Features:
 # Docker
 
 Docker image is built automatically by Jenkins.
-![alt text](<Screenshot From 2026-06-20 13-07-45.png>)
+![alt text](screenshots/docker.png))
 Image format:
 
 ```
@@ -300,4 +299,4 @@ Console outputs for the two(Build and Deploy) pipelines are available in `logs/`
 
 # Accessing API at EC2 IP
 
-![alt text](<Screenshot From 2026-06-20 14-52-08.png>)
+![alt text](screenshots/API.png)
