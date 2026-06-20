@@ -265,41 +265,7 @@ Pods Updated
 
 ---
 
-# Running the Project
 
-## Clone
-
-```bash
-git clone https://github.com/vigneshkomma/devops-eks-jenkins-project.git
-
-cd devops-eks-jenkins-project
-```
-
----
-
-## Build Docker Image
-
-```bash
-docker build -t devops-app .
-```
-
----
-
-## Run Docker Container
-
-```bash
-docker run -d -p 8000:8000 devops-app
-```
-
----
-
-## Deploy using Helm
-
-```bash
-helm upgrade --install devops-app kubernetes/helm/devops-app
-```
-
----
 
 # Jenkins Pipelines
 
