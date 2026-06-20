@@ -1,0 +1,318 @@
+Started by GitHub push by vigneshkomma
+Obtained Jenkinsfile.build from git https://github.com/vigneshkomma/devops-eks-jenkins-project
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on jenkins-worker in /home/admin/workspace/devops-app
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Fetching changes from the remote Git repository
+Checking out Revision 13c8ceba2a1eeee7f773a661a3acefbc3cdd0052 (refs/remotes/origin/main)
+Commit message: "Test"
+ > git rev-parse --resolve-git-dir /home/admin/workspace/devops-app/.git # timeout=10
+ > git config remote.origin.url https://github.com/vigneshkomma/devops-eks-jenkins-project # timeout=10
+Fetching upstream changes from https://github.com/vigneshkomma/devops-eks-jenkins-project
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/vigneshkomma/devops-eks-jenkins-project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 13c8ceba2a1eeee7f773a661a3acefbc3cdd0052 # timeout=10
+ > git rev-list --no-walk fbc24c5f3d0cce738fd82b6ac1797d7f5d8f5b3c # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Fetching changes from the remote Git repository
+Checking out Revision 13c8ceba2a1eeee7f773a661a3acefbc3cdd0052 (refs/remotes/origin/main)
+Commit message: "Test"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Docker Image)
+[Pipeline] sh
++ docker build -t vigneshop/devops-app:26 .
+ > git rev-parse --resolve-git-dir /home/admin/workspace/devops-app/.git # timeout=10
+ > git config remote.origin.url https://github.com/vigneshkomma/devops-eks-jenkins-project # timeout=10
+Fetching upstream changes from https://github.com/vigneshkomma/devops-eks-jenkins-project
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/vigneshkomma/devops-eks-jenkins-project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 13c8ceba2a1eeee7f773a661a3acefbc3cdd0052 # timeout=10
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 254B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.6s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 1.49kB done
+#4 DONE 0.0s
+
+#5 [1/5] FROM docker.io/library/python:3.12-slim@sha256:d764629ce0ddd8c71fd371e9901efb324a95789d2315a47db7e4d27e78f1b0e9
+#5 resolve docker.io/library/python:3.12-slim@sha256:d764629ce0ddd8c71fd371e9901efb324a95789d2315a47db7e4d27e78f1b0e9 0.0s done
+#5 DONE 0.0s
+
+#6 [2/5] WORKDIR /app
+#6 CACHED
+
+#7 [3/5] COPY requirements.txt .
+#7 CACHED
+
+#8 [4/5] RUN pip install --no-cache-dir -r requirements.txt
+#8 CACHED
+
+#9 [5/5] COPY app ./app
+#9 DONE 0.0s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 0.1s done
+#10 exporting manifest sha256:a03f5cca20d6a66891f2a4b722c6aa67d15aa922768b80ef9069dbd48782d02d 0.0s done
+#10 exporting config sha256:376a534a9e075e028f1c5b9711a815567de411dd114290d0eb19c84aba4a1ae8 0.0s done
+#10 exporting attestation manifest sha256:f9df12348d797eb200bf3d83f56c5eb97f935a884034ae5d71a544d559c76c9c 0.0s done
+#10 exporting manifest list sha256:3a4a86a34b2a218edc3089633b2fb70e351748552c2de41bd9fa27ecf4af9b15 0.0s done
+#10 naming to docker.io/vigneshop/devops-app:26 done
+#10 unpacking to docker.io/vigneshop/devops-app:26 0.0s done
+#10 DONE 0.2s
++ docker tag vigneshop/devops-app:26 vigneshop/devops-app:latest
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test Container)
+[Pipeline] sh
++ docker rm -f devops-app-test
+Error response from daemon: No such container: devops-app-test
++ docker run -d --name devops-app-test -p 8000:8000 vigneshop/devops-app:26
+356f8dcd9a27b0616f3d7d30d9152eba842c8d6ba7c823b68efde6f96e4d15a7
++ sleep 5
++ curl -f http://localhost:8000/
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    77  100    77    0     0   9792      0 --:--:-- --:--:-- --:--:-- 11000
+{"message":"URL Health Checker API is running: version:1.0.1","docs":"/docs"}
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push to Docker Hub)
+[Pipeline] withCredentials
+Masking supported pattern matches of $DOCKER_PASS
+[Pipeline] {
+[Pipeline] sh
++ echo ****
++ docker login -u vigneshop --password-stdin
+
+WARNING! Your credentials are stored unencrypted in '/home/admin/.docker/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+Login Succeeded
++ docker push vigneshop/devops-app:26
+The push refers to repository [docker.io/vigneshop/devops-app]
+4b6b2afbcb1e: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6ec7f4e699d7: Waiting
+72c03230f136: Waiting
+3f388d13a957: Waiting
+0c9eca391e04: Waiting
+9f1368753ddb: Waiting
+6482afd9da32: Waiting
+a19bcfe468b4: Waiting
+6ec7f4e699d7: Waiting
+72c03230f136: Waiting
+3f388d13a957: Waiting
+0c9eca391e04: Waiting
+9f1368753ddb: Waiting
+6482afd9da32: Waiting
+4b6b2afbcb1e: Waiting
+6dc8148c4b61: Waiting
+4b6b2afbcb1e: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6ec7f4e699d7: Waiting
+72c03230f136: Waiting
+3f388d13a957: Waiting
+0c9eca391e04: Waiting
+9f1368753ddb: Waiting
+6482afd9da32: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6ec7f4e699d7: Waiting
+72c03230f136: Waiting
+3f388d13a957: Waiting
+0c9eca391e04: Waiting
+9f1368753ddb: Waiting
+6482afd9da32: Waiting
+4b6b2afbcb1e: Waiting
+4b6b2afbcb1e: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6ec7f4e699d7: Waiting
+72c03230f136: Waiting
+3f388d13a957: Waiting
+0c9eca391e04: Waiting
+9f1368753ddb: Waiting
+6482afd9da32: Waiting
+4b6b2afbcb1e: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6ec7f4e699d7: Waiting
+72c03230f136: Waiting
+3f388d13a957: Waiting
+0c9eca391e04: Waiting
+9f1368753ddb: Waiting
+6482afd9da32: Waiting
+72c03230f136: Waiting
+3f388d13a957: Waiting
+0c9eca391e04: Waiting
+9f1368753ddb: Waiting
+6482afd9da32: Layer already exists
+4b6b2afbcb1e: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6ec7f4e699d7: Waiting
+9f1368753ddb: Waiting
+4b6b2afbcb1e: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6ec7f4e699d7: Layer already exists
+72c03230f136: Waiting
+3f388d13a957: Waiting
+0c9eca391e04: Waiting
+0c9eca391e04: Waiting
+9f1368753ddb: Layer already exists
+4b6b2afbcb1e: Layer already exists
+6dc8148c4b61: Layer already exists
+a19bcfe468b4: Layer already exists
+72c03230f136: Layer already exists
+3f388d13a957: Waiting
+0c9eca391e04: Waiting
+3f388d13a957: Pushed
+0c9eca391e04: Pushed
+26: digest: sha256:3a4a86a34b2a218edc3089633b2fb70e351748552c2de41bd9fa27ecf4af9b15 size: 856
++ docker push vigneshop/devops-app:latest
+The push refers to repository [docker.io/vigneshop/devops-app]
+3f388d13a957: Waiting
+72c03230f136: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6482afd9da32: Waiting
+0c9eca391e04: Waiting
+4b6b2afbcb1e: Waiting
+6ec7f4e699d7: Waiting
+9f1368753ddb: Waiting
+0c9eca391e04: Waiting
+4b6b2afbcb1e: Waiting
+6ec7f4e699d7: Waiting
+9f1368753ddb: Waiting
+3f388d13a957: Waiting
+72c03230f136: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6482afd9da32: Waiting
+a19bcfe468b4: Waiting
+6482afd9da32: Waiting
+0c9eca391e04: Waiting
+4b6b2afbcb1e: Waiting
+6ec7f4e699d7: Waiting
+9f1368753ddb: Waiting
+3f388d13a957: Waiting
+72c03230f136: Waiting
+6dc8148c4b61: Waiting
+6ec7f4e699d7: Waiting
+9f1368753ddb: Waiting
+3f388d13a957: Waiting
+72c03230f136: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6482afd9da32: Waiting
+0c9eca391e04: Waiting
+4b6b2afbcb1e: Waiting
+4b6b2afbcb1e: Waiting
+6ec7f4e699d7: Waiting
+9f1368753ddb: Waiting
+3f388d13a957: Waiting
+72c03230f136: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+6482afd9da32: Waiting
+0c9eca391e04: Waiting
+6482afd9da32: Waiting
+0c9eca391e04: Waiting
+4b6b2afbcb1e: Waiting
+6ec7f4e699d7: Waiting
+9f1368753ddb: Waiting
+3f388d13a957: Waiting
+72c03230f136: Waiting
+6dc8148c4b61: Waiting
+a19bcfe468b4: Waiting
+0c9eca391e04: Waiting
+4b6b2afbcb1e: Waiting
+6ec7f4e699d7: Waiting
+9f1368753ddb: Waiting
+3f388d13a957: Waiting
+72c03230f136: Waiting
+6dc8148c4b61: Layer already exists
+a19bcfe468b4: Waiting
+6482afd9da32: Waiting
+0c9eca391e04: Layer already exists
+4b6b2afbcb1e: Waiting
+6ec7f4e699d7: Waiting
+9f1368753ddb: Waiting
+3f388d13a957: Already exists
+72c03230f136: Waiting
+a19bcfe468b4: Waiting
+6482afd9da32: Waiting
+4b6b2afbcb1e: Layer already exists
+6ec7f4e699d7: Layer already exists
+9f1368753ddb: Layer already exists
+72c03230f136: Layer already exists
+a19bcfe468b4: Layer already exists
+6482afd9da32: Layer already exists
+latest: digest: sha256:3a4a86a34b2a218edc3089633b2fb70e351748552c2de41bd9fa27ecf4af9b15 size: 856
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] sh
++ docker rm -f devops-app-test
+devops-app-test
++ docker logout
+Removing login credentials for https://index.docker.io/v1/
+[Pipeline] echo
+Docker image pushed successfully: vigneshop/devops-app:26
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Triggering a new build of devopss-deploy #7
+Finished: SUCCESS

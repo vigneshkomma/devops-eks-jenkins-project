@@ -1,0 +1,99 @@
+Started by upstream project "devops-app" build number 26
+originally caused by:
+ Started by GitHub push by vigneshkomma
+Obtained Jenkinsfile.deploy from git https://github.com/vigneshkomma/devops-eks-jenkins-project
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on jenkins-worker in /home/admin/workspace/devopss-deploy
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Fetching changes from the remote Git repository
+Checking out Revision 13c8ceba2a1eeee7f773a661a3acefbc3cdd0052 (refs/remotes/origin/main)
+Commit message: "Test"
+ > git rev-parse --resolve-git-dir /home/admin/workspace/devopss-deploy/.git # timeout=10
+ > git config remote.origin.url https://github.com/vigneshkomma/devops-eks-jenkins-project # timeout=10
+Fetching upstream changes from https://github.com/vigneshkomma/devops-eks-jenkins-project
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/vigneshkomma/devops-eks-jenkins-project +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 13c8ceba2a1eeee7f773a661a3acefbc3cdd0052 # timeout=10
+ > git rev-list --no-walk fbc24c5f3d0cce738fd82b6ac1797d7f5d8f5b3c # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Check Kubernetes Access)
+[Pipeline] sh
++ kubectl get nodes
+NAME               STATUS   ROLES           AGE   VERSION
+ip-172-31-24-220   Ready    control-plane   46m   v1.35.5+k3s1
++ helm version
+version.BuildInfo{Version:"v3.21.1", GitCommit:"c56dd0095fd76da5d7b30ecdf506103e7f26745e", GitTreeState:"clean", GoVersion:"go1.26.4"}
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Clean Old Failed Pods)
+[Pipeline] sh
++ kubectl delete pods --field-selector=status.phase=Failed
+No resources found
++ kubectl delete pods --field-selector=status.phase=Succeeded
+No resources found
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy with Helm)
+[Pipeline] sh
++ helm upgrade --install devops-app kubernetes/helm/devops-app --set image.repository=vigneshop/devops-app --set image.tag=latest --set image.pullPolicy=Always
+Release "devops-app" has been upgraded. Happy Helming!
+NAME: devops-app
+LAST DEPLOYED: Sat Jun 20 08:14:23 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 4
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify Deployment)
+[Pipeline] sh
++ kubectl rollout status deployment/devops-app --timeout=120s
+deployment "devops-app" successfully rolled out
++ kubectl get deployment devops-app
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+devops-app   5/5     5            5           23m
++ kubectl get pods -l app=devops-app
+NAME                          READY   STATUS    RESTARTS   AGE
+devops-app-7f49bcbd87-5kdzn   1/1     Running   0          19m
+devops-app-7f49bcbd87-6h25r   1/1     Running   0          19m
+devops-app-7f49bcbd87-6lhvs   1/1     Running   0          19m
+devops-app-7f49bcbd87-9mzrk   1/1     Running   0          19m
+devops-app-7f49bcbd87-cf975   1/1     Running   0          19m
++ kubectl get svc
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+devops-app-service   NodePort    10.43.242.180   <none>        80:30080/TCP   23m
+kubernetes           ClusterIP   10.43.0.1       <none>        443/TCP        46m
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Kubernetes deployment completed successfully.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
