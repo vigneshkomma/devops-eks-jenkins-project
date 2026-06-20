@@ -1,20 +1,71 @@
-pipeline{
-    agent{
+pipeline {
+    agent {
         label 'jenkins-worker'
     }
 
-    stages{
-        stage('Deploy k8s'){
-            steps{
-                sh '''
-                    helm upgrade --install devops-app \
-                    kubernetes/helm/devops-app \
-                    --set image.repository=vigneshop/devops-app \
-                    --set image.tag=latest
+    environment {
+        KUBECONFIG = '/home/admin/.kube/config'
+        RELEASE_NAME = 'devops-app'
+        CHART_PATH = 'kubernetes/helm/devops-app'
+        IMAGE_REPO = 'vigneshop/devops-app'
+        IMAGE_TAG = 'latest'
+    }
 
-                    kubectl rollout status deployment/devops-app
+    stages {
+        stage('Check Kubernetes Access') {
+            steps {
+                sh '''
+                    kubectl get nodes
+                    helm version
                 '''
             }
+        }
+
+        stage('Clean Old Failed Pods') {
+            steps {
+                sh '''
+                    kubectl delete pods --field-selector=status.phase=Failed || true
+                    kubectl delete pods --field-selector=status.phase=Succeeded || true
+                '''
+            }
+        }
+
+        stage('Deploy with Helm') {
+            steps {
+                sh '''
+                    helm upgrade --install $RELEASE_NAME $CHART_PATH \
+                      --set image.repository=$IMAGE_REPO \
+                      --set image.tag=$IMAGE_TAG \
+                      --set image.pullPolicy=Always
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                    kubectl rollout status deployment/$RELEASE_NAME --timeout=120s
+                    kubectl get deployment $RELEASE_NAME
+                    kubectl get pods -l app=$RELEASE_NAME
+                    kubectl get svc
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Kubernetes deployment completed successfully."
+        }
+
+        failure {
+            echo "Deployment failed. Showing debug information..."
+
+            sh '''
+                kubectl get pods || true
+                kubectl describe deployment $RELEASE_NAME || true
+                kubectl get events --sort-by=.metadata.creationTimestamp | tail -30 || true
+            '''
         }
     }
 }
