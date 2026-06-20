@@ -6,7 +6,7 @@ from app import service
 app = FastAPI(
     title = "URL Health checker API",
     description= "A simple DevOps-style API that monitors service uptime and response time.",
-    version= "1.0.7"
+    version= "1.0.8"
 )
 
 @app.get("/")
