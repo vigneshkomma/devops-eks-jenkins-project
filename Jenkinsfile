@@ -33,7 +33,7 @@ pipeline{
                     docker rm -f $CONTAINER_NAME || true
                     docker run -d --name $CONTAINER_NAME -p 8000:8000 $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
                     sleep 5
-                    curl -f http://localhost:8000/health
+                    curl -f http://localhost:8000/
                 '''
             }
         }
